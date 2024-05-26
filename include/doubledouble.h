@@ -126,10 +126,17 @@ public:
     DoubleDouble& operator/=(const DoubleDouble& x);
 
     bool operator==(const DoubleDouble& x) const;
+    bool operator==(double x) const;
+    bool operator!=(const DoubleDouble& x) const;
+    bool operator!=(double x) const;
     bool operator<(double x) const;
     bool operator<(const DoubleDouble& x) const;
+    bool operator<=(double x) const;
+    bool operator<=(const DoubleDouble& x) const;
     bool operator>(double x) const;
     bool operator>(const DoubleDouble& x) const;
+    bool operator>=(double x) const;
+    bool operator>=(const DoubleDouble& x) const;
 
     DoubleDouble powi(int n) const;
     DoubleDouble exp() const;
@@ -356,6 +363,34 @@ inline bool DoubleDouble::operator==(const DoubleDouble& x) const
     return (upper == x.upper) && (lower == x.lower);
 }
 
+inline bool DoubleDouble::operator==(double x) const
+{
+    // XXX Do the (upper, lower) representations need to be canonicalized first?
+    return (upper == x) && (lower == 0.0);
+}
+
+inline bool operator==(double x, const DoubleDouble& y)
+{
+    return y == x;
+}
+
+inline bool DoubleDouble::operator!=(const DoubleDouble& x) const
+{
+    // XXX Do the (upper, lower) representations need to be canonicalized first?
+    return (upper != x.upper) || (lower != x.lower);
+}
+
+inline bool DoubleDouble::operator!=(double x) const
+{
+    // XXX Do the (upper, lower) representations need to be canonicalized first?
+    return (upper != x) || (lower != 0.0);
+}
+
+inline bool operator!=(double x, const DoubleDouble& y)
+{
+    return y != x;
+}
+
 inline bool DoubleDouble::operator<(const DoubleDouble& x) const
 {
     // XXX Do the (upper, lower) representations need to be canonicalized first?
@@ -368,6 +403,27 @@ inline bool DoubleDouble::operator<(double x) const
     return (upper < x) || ((upper == x) && (lower < 0.0));
 }
 
+inline bool operator<(double x, const DoubleDouble& y)
+{
+    return y >= x;
+}
+
+inline bool DoubleDouble::operator<=(const DoubleDouble& x) const
+{
+    // XXX Do the (upper, lower) representations need to be canonicalized first?
+    return (upper < x.upper) || ((upper == x.upper) && (lower <= x.lower));
+}
+
+inline bool DoubleDouble::operator<=(double x) const
+{
+    // XXX Do the (upper, lower) representations need to be canonicalized first?
+    return (upper < x) || ((upper == x) && (lower <= 0.0));
+}
+
+inline bool operator<=(double x, const DoubleDouble& y)
+{
+    return y >= x;
+}
 
 inline bool DoubleDouble::operator>(const DoubleDouble& x) const
 {
@@ -379,6 +435,28 @@ inline bool DoubleDouble::operator>(double x) const
 {
     // XXX Do the (upper, lower) representations need to be canonicalized first?
     return (upper > x) || ((upper == x) && (lower > 0.0));
+}
+
+inline bool operator>(double x, const DoubleDouble& y)
+{
+    return y <= x;
+}
+
+inline bool DoubleDouble::operator>=(const DoubleDouble& x) const
+{
+    // XXX Do the (upper, lower) representations need to be canonicalized first?
+    return (upper > x.upper) || ((upper == x.upper) && (lower >= x.lower));
+}
+
+inline bool DoubleDouble::operator>=(double x) const
+{
+    // XXX Do the (upper, lower) representations need to be canonicalized first?
+    return (upper > x) || ((upper == x) && (lower >= 0.0));
+}
+
+inline bool operator>=(double x, const DoubleDouble& y)
+{
+    return y <= x;
 }
 
 inline DoubleDouble DoubleDouble::powi(int n) const

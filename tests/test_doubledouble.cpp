@@ -165,6 +165,53 @@ void test_expressions(CheckIt& test)
     check_close_fp(test, y.lower, -1.4573851200099609e-22, 5e-16, "Check (pi - p6)*((pi + p6)/2) (lower)");
 }
 
+void test_comparisons(CheckIt& test)
+{
+    DoubleDouble w, x, y, z;
+
+    w = DoubleDouble(-3.0);
+    x = DoubleDouble(13.5, 1e-20);
+    y = DoubleDouble(13.5, -3e-18);
+    z = DoubleDouble(99.0, -3e-18);
+
+    check_true(test, x == x, "x == x");
+    check_true(test, !(x == 2.0), "!(x == 2.0)");
+    check_true(test, !(x == y), "!(x == y)");
+    check_true(test, !(x == z), "!(x == z)");
+    check_true(test, w == -3.0, "w == -3.0");
+    check_true(test, -3.0 == w, "-3.0 == w");
+
+    check_true(test, x != y, "x != y");
+    check_true(test, x != z, "x != z");
+    check_true(test, x != 1.0, "x != 1.0");
+    check_true(test, 1.0 != x, "1.0 != x");
+
+    check_true(test, y < x, "y < x");
+    check_true(test, y < 14.0, "y < 14.0");
+    check_true(test, y < 13.5, "y < 13.5");
+    check_true(test, 13.5 < x, "13.5 < x");
+
+    check_true(test, y <= x, "y <= x");
+    check_true(test, y <= y, "y <= x");
+    check_true(test, y <= 14.0, "y <= 14.0");
+    check_true(test, y <= 13.5, "y <= 13.5");
+    check_true(test, 13.5 <= x, "13.5 <= x");
+    check_true(test, -3.0 <= w, "-3.0 <= w");
+
+    check_true(test, x > y, "x > y");
+    check_true(test, x > 12.0, "x > 12.0");
+    check_true(test, x > 13.5, "x > 13.5");
+    check_true(test, 100.0 > z, "100.0 > z");
+
+    check_true(test, x >= y, "x >= y");
+    check_true(test, x >= x, "x >= x");
+    check_true(test, x >= 12.0, "x >= 12.0");
+    check_true(test, x >= 13.5, "x >= 13.5");
+    check_true(test, 100.0 >= z, "100.0 >= z");
+    check_true(test, -3.0 >= w, "-3.0 >= w");
+}
+
+
 void test_abs(CheckIt& test)
 {
     DoubleDouble a;
@@ -380,6 +427,7 @@ int main(int argc, char *argv[])
     test_divide(test);
     test_inplace_divide(test);
     test_expressions(test);
+    test_comparisons(test);
     test_abs(test);
     test_powi(test);
     test_sqrt(test);
