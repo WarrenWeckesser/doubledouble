@@ -64,8 +64,43 @@ public:
     DoubleDouble() {}
 
     constexpr
-    DoubleDouble(double upper, double lower) : upper(upper), lower(lower)
-    {}
+    DoubleDouble(double x, double y)
+    {
+        // XXX What if x or y is NAN?
+        // XXX This canonicalization convention for INFs is experimental
+        //     and subject to change.
+        bool xinf = isinf(x);
+        bool yinf = isinf(y);
+        if (xinf && yinf) {
+            if (x != y) {
+                // x and y are INFs with opposite signs.  Since the numerical
+                // value of the DoubleDouble is x + y, we set upper and lower
+                // to NAN.
+                upper = NAN;
+                lower = NAN;
+            }
+            else {
+                upper = x;
+                lower = 0.0;
+            }
+        }
+        else if (xinf) {
+            upper = x;
+            lower = 0.0;
+        }
+        else if (yinf) {
+            upper = y;
+            lower = 0.0;
+        }
+        else {
+            // This is equivalent to two_sum(x, y)
+            double r = x + y;
+            double t = r - x;
+            double e = (x - (r - t)) + (y - t);
+            upper = r;
+            lower = e;
+        }
+    }
 
     constexpr
     DoubleDouble(double upper) : upper(upper)
@@ -394,6 +429,9 @@ inline DoubleDouble DoubleDouble::exp() const
 
 inline DoubleDouble DoubleDouble::sqrt() const
 {
+    if (upper == 0 && lower == 0) {
+        return DoubleDouble(0.0, 0.0);
+    }
     double r = std::sqrt(upper);
     DoubleDouble sf = two_product(r, r);
     double e = (upper - sf.upper - sf.lower + lower) * 0.5 / r;
@@ -502,16 +540,28 @@ inline DoubleDouble DoubleDouble::expm1() const
     return expm1_rational_approx(*this);
 }
 
-inline constexpr DoubleDouble operator "" _dd (long double x)
+//////////////////////////////////////////////////////////////////////////
+// Additional functions
+//////////////////////////////////////////////////////////////////////////
+
+inline DoubleDouble hypot(const DoubleDouble& x, const DoubleDouble &y)
 {
-    return DoubleDouble(x, x - double(x));
+    auto absx = x.abs();
+    auto absy = y.abs();
+    auto m = (absx > absy) ? absx : absy;
+    if (m.upper == 0.0 && m.lower == 0.0) {
+        return DoubleDouble(0.0, 0.0);
+    }
+    auto u = x/m;
+    auto v = y/m;
+    return m*(u*u + v*v).sqrt();
 }
 
 //
 // dsum() sums an array of doubles. DoubleDouble is used internally.
 //
 
-double dsum(size_t n, const double *x)
+inline double dsum(size_t n, const double *x)
 {
     DoubleDouble sum{0.0, 0.0};
     for (size_t i = 0; i < n; ++i) {
@@ -520,13 +570,13 @@ double dsum(size_t n, const double *x)
     return sum.upper;
 }
 
-double dsum(const std::vector<double>& x)
+inline double dsum(const std::vector<double>& x)
 {
     return dsum(x.size(), &x[0]);
 }
 
 template <std::size_t N>
-double dsum(const std::array<double, N>& x)
+inline double dsum(const std::array<double, N>& x)
 {
     return dsum(x.size(), &x[0]);
 }
