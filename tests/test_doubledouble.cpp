@@ -37,8 +37,8 @@ void test_constructor(CheckIt& test)
     check_equal_fp(test, y.lower, 0.0, "DoubleDouble(INF, 0) (lower)");
 
     auto bad = DoubleDouble((double) INFINITY, (double) -INFINITY);
-    check_true(test, isnan(bad.upper), "DoubleDouble(INF, -INF) (upper)");
-    check_true(test, isnan(bad.lower), "DoubleDouble(INF, -INF) (lower)");
+    check_true(test, std::isnan(bad.upper), "DoubleDouble(INF, -INF) (upper)");
+    check_true(test, std::isnan(bad.lower), "DoubleDouble(INF, -INF) (lower)");
 }
 
 void test_add(CheckIt& test)

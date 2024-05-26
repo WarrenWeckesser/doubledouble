@@ -69,8 +69,8 @@ public:
         // XXX What if x or y is NAN?
         // XXX This canonicalization convention for INFs is experimental
         //     and subject to change.
-        bool xinf = isinf(x);
-        bool yinf = isinf(y);
+        bool xinf = std::isinf(x);
+        bool yinf = std::isinf(y);
         if (xinf && yinf) {
             if (x != y) {
                 // x and y are INFs with opposite signs.  Since the numerical
