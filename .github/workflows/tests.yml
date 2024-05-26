@@ -1,0 +1,16 @@
+name: Test commands
+
+on: [push, pull_request]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Compile and run tests.
+    - uses: actions/checkout@v4
+      run: |
+        cd tests
+        make
+        ./test_doubledouble
