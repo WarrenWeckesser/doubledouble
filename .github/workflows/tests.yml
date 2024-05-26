@@ -1,15 +1,15 @@
-name: Test commands
+name: Test
 
 on: [push, pull_request]
 
 jobs:
-  build:
+  test:
 
     runs-on: ubuntu-latest
     
     steps:
-    - name: Compile and run tests.
     - uses: actions/checkout@v4
+    - name: Compile and run tests.
       run: |
         cd tests
         make
