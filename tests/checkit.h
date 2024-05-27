@@ -73,9 +73,8 @@ public:
                      const std::string& msg)
     {
         errfile << "* failure:  " << details << "\n";
-        errfile << "  filename: " << filename
-                << "   function: " << func
-                << "   line: " << linenumber << "\n";
+        errfile << "  location: " << filename << ":" << linenumber
+                << "   function: " << func << std::endl;
         errfile << "  message:  " << msg << std::endl;
     }
 
