@@ -1,4 +1,5 @@
 
+#include <sstream>
 #include <cstdio>
 #include <vector>
 #include <cmath>
@@ -266,18 +267,55 @@ void test_log(CheckIt& test)
     y = DoubleDouble(1.000000099005, 0.0).log();
     check_equal_fp(test, y.upper, 9.900499507506536e-08, "log(1.000000099005) (upper)");
     check_close_fp(test, y.lower, 4.563816054961034e-24, 2e-9, "log(1.000000099005) (lower)");
+
+    y = DoubleDouble(1.1, 0.0).log();
+    check_equal_fp(test, y.upper, 0.09531017980432493, "log(1.1) (upper)");
+    check_close_fp(test, y.lower, 5.927240202146761e-18, 8e-16, "log(1.1) (lower)");
+
+    y = DoubleDouble(1e-21, 3.5e-43).log();
+    check_equal_fp(test, y.upper, -48.35428695287496, "log((1e-21, 3.5e-43)) (upper)");
+    check_close_fp(test, y.lower, -1.7511230665702564e-15, 5e-16, "log((1e-21, 3.5e-43)) (lower)");
 }
 
-/* log1p not implemented yet...
+struct log1p_case {
+    // Acceptable relative error in the lower part of the result.
+    double reltol;
+
+    double xhi, xlo, yhi, ylo;
+};
+
 void test_log1p(CheckIt& test)
 {
-    DoubleDouble x{0.0026, 2e-20};
+    struct log1p_case samples[] = {
+        {5e-16, 3.1e-50, 7e-68, 3.1e-50, 7e-68},
+        {5e-16, 1.4e-30, 5e-48, 1.4e-30, 4.9999999999990196e-48},
 
-    auto y = x.log1p();
-    check_equal_fp(test, y.upper, 0.002596625847265978, "log1p((1.0026, 5e-17)) (upper)");
-    check_close_fp(test, y.lower, 1.1029570690454358e-19, 5e-16, "log1p((1.0026, 5e-17)) (lower)");
+        {2e-15, 7.7e-16, 8.6e-34, 7.699999999999997e-16, 2.328394578795871e-34},
+        {5e-16, 3e-8, 0.0, 2.9999999550000006e-08, 4.44602137450418e-26},
+        {5e-16, 5e-7, 0.0, 4.999998750000417e-07, -1.9801357223218586e-23},
+        {5e-16, 2e-6, 0.0, 1.9999980000026667e-06, -1.6536017667488005e-22},
+        {4e-12, 2e-5, 0.0, 1.9999800002666627e-05, 1.3694019941860543e-21},
+        {5e-12, 7e-4, 0.0, 0.0006997551142733419, 8.045441159182502e-21},
+        {8e-14, 2.6e-3, 2e-20, 0.002596625847265978, 1.1029570690454358e-19},
+        {8e-14, -2.6e-3, -3e-21, -0.002603385870114881, 1.2070558387143255e-20},
+
+        {5e-16, -1.0, 2e-20, -45.35855467932097, -1.1302366343060957e-15},
+        {5e-16, -0.5, -4.7e-18, -0.6931471805599453, -3.2590468138462995e-17},
+        {5e-16, 1.5, 5e-19, 0.9162907318741551, -4.121195369011963e-17},
+        {5e-16, 3.0, 0.0, 1.3862943611198906, 4.638093627692599e-17}
+    };
+    
+    for (size_t i = 0; i < sizeof(samples)/sizeof(struct log1p_case); ++i) {
+        struct log1p_case sample = samples[i];
+        DoubleDouble x{sample.xhi, sample.xlo};
+        auto y = x.log1p();
+        std::stringstream s1, s2;
+        s1 << "log1p case " << i << "  (upper)";
+        s2 << "log1p case " << i << "  (lower)";
+        check_equal_fp(test, y.upper, sample.yhi, s1.str());
+        check_close_fp(test, y.lower, sample.ylo, sample.reltol, s2.str());
+    }
 }
-*/
 
 void test_exp(CheckIt& test)
 {
@@ -432,7 +470,7 @@ int main(int argc, char *argv[])
     test_powi(test);
     test_sqrt(test);
     test_log(test);
-    // test_log1p(test);
+    test_log1p(test);
     test_exp(test);
     test_expm1(test);
     test_hypot(test);

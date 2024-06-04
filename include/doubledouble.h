@@ -142,6 +142,7 @@ public:
     DoubleDouble exp() const;
     DoubleDouble expm1() const;
     DoubleDouble log() const;
+    DoubleDouble log1p() const;
     DoubleDouble sqrt() const;
     DoubleDouble abs() const;
 };
@@ -516,12 +517,40 @@ inline DoubleDouble DoubleDouble::sqrt() const
     return two_sum_quick(r, e);
 }
 
+// XXX See the various relative tolerances in the unit tests
+// for cases where it would be nice to get a more accurate
+// result.
 inline DoubleDouble DoubleDouble::log() const
 {
     DoubleDouble r(std::log(upper));
     DoubleDouble u = r.exp();
     r = r - DoubleDouble(2.0)*(u - *this)/(u + *this);
     return r;
+}
+
+// inline DoubleDouble DoubleDouble::log1p() const
+// {
+//     DoubleDouble u = *this + 1.0;
+//     if (u == 0.0) {
+//         return *this;
+//     }
+//     return u.log()*(*this)/(u - 1.0);
+// }
+
+//
+// This needs a second look.  See the various relative tolerances
+// in the unit tests for cases where I think it should do better.
+//
+inline DoubleDouble DoubleDouble::log1p() const
+{
+    if ((*this).abs() < 1e-5) {
+        // Taylor polynomial:
+        return (*this)*(1.0 + (*this)*(-0.5 + (*this)*(1.0/DoubleDouble(3.0) + (*this)*(-0.25 + (*this)*(1.0/DoubleDouble(5.0) - (*this)/6.0)))));
+    }
+    DoubleDouble xp1 = (*this) + 1.0;
+    // DoubleDouble eps = xp1 - 1.0 - *this;
+    // std::cout << "eps = (" << eps.upper << ", " << eps.lower << ")" << std::endl;
+    return xp1.log();
 }
 
 inline DoubleDouble DoubleDouble::abs() const
