@@ -30,7 +30,6 @@ OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #ifndef CHECKIT_H
 #define CHECKIT_H
 
-#include <fstream>
 #include <iostream>
 #include <string>
 #include <cstring>
@@ -51,21 +50,16 @@ public:
 
     CheckIt(std::ostream &errfile) : errfile(errfile) {}
 
-    int fprint_summary(std::ostream& out, const std::string& label)
-    {
-        out << label;
-        out << "Assertions: " << num_assertions << "    Failures: " << num_failed << std::endl;
-        return num_failed > 0;
-    }
-
     int print_summary(const std::string& label)
     {
-        return fprint_summary(std::cerr, label);
+        errfile << label;
+        errfile << "Assertions: " << num_assertions << "    Failures: " << num_failed << std::endl;
+        return num_failed > 0;
     }
 
     int print_summary(void)
     {
-        return fprint_summary(std::cerr, "");
+        return print_summary("");
     }
 
     void log_failure(const std::string &details, const char* filename,
@@ -78,7 +72,7 @@ public:
         errfile << "  message:  " << msg << std::endl;
     }
 
-    void assert_true(int value, const std::string& msg, const char *filename, const char* func, int linenumber)
+    void check_true(int value, const std::string& msg, const char *filename, const char* func, int linenumber)
     {
         num_assertions += 1;
         if (!value) {
@@ -92,7 +86,7 @@ public:
 
     // Floating point equality comparison
     template<typename FP>
-    void assert_equal_fp(FP value1, FP value2,
+    void check_equal_fp(FP value1, FP value2,
                          const std::string& msg, const char *filename,  const char * func, int linenumber)
     {
         num_assertions += 1;
@@ -117,7 +111,7 @@ public:
     // when the expected value is 0.
     //
     template<typename FP>
-    void assert_close_fp(FP value, FP expected, FP reltol,
+    void check_close_fp(FP value, FP expected, FP reltol,
                          const std::string& msg, const char *filename, const char *func, int linenumber)
     {
         num_assertions += 1;
@@ -135,7 +129,7 @@ public:
 
     // Integer comparison
     template<typename Integer>
-    void assert_equal_integer(Integer value1, Integer value2,
+    void check_equal_integer(Integer value1, Integer value2,
                               const std::string& msg, const char *filename, const char *func, int linenumber)
     {
         num_assertions += 1;
@@ -148,7 +142,7 @@ public:
         }
     }
 
-    void assert_equal_char(char value1, char value2,
+    void check_equal_char(char value1, char value2,
                            const std::string& msg, const char *filename, const char *func, int linenumber)
     {
         num_assertions += 1;
@@ -161,7 +155,7 @@ public:
         }
     }
 
-    void assert_equal_pointer(void *value1, void *value2,
+    void check_equal_pointer(void *value1, void *value2,
                               const std::string& msg, const char *filename, const char *func, int linenumber)
     {
         num_assertions += 1;
@@ -172,7 +166,7 @@ public:
         }
     }
 
-    void assert_equal_cstr(const char *value1, const char *value2,
+    void check_equal_cstr(const char *value1, const char *value2,
                            const std::string& msg, const char *filename, const char *func, int linenumber)
     {
         num_assertions += 1;
@@ -187,12 +181,12 @@ public:
 };
 
 
-#define check_true(A, B, C)              A .assert_true(B, C, __FILE__, __func__, __LINE__)
-#define check_equal_pointer(A, B, C, D)  A .assert_equal_pointer(B, C, D, __FILE__, __func__, __LINE__)
-#define check_equal_cstr(A, B, C, D)     A .assert_equal_cstr(B, C, D, __FILE__, __func__, __LINE__)
-#define check_equal_fp(A, B, C, D)       A .assert_equal_fp(B, C, D, __FILE__, __func__, __LINE__)
-#define check_close_fp(A, B, C, D, E)    A .assert_close_fp(B, C, D, E, __FILE__, __func__, __LINE__)
-#define check_equal_integer(A, B, C, D)  A .assert_equal_integer(B, C, D, __FILE__, __func__, __LINE__)
-#define check_equal_char(A, B, C, D)     A .assert_equal_char(B, C, D, __FILE__, __func__, __LINE__)
+#define assert_true(A, B, C)              A .check_true(B, C, __FILE__, __func__, __LINE__)
+#define assert_equal_pointer(A, B, C, D)  A .check_equal_pointer(B, C, D, __FILE__, __func__, __LINE__)
+#define assert_equal_cstr(A, B, C, D)     A .check_equal_cstr(B, C, D, __FILE__, __func__, __LINE__)
+#define assert_equal_fp(A, B, C, D)       A .check_equal_fp(B, C, D, __FILE__, __func__, __LINE__)
+#define assert_close_fp(A, B, C, D, E)    A .check_close_fp(B, C, D, E, __FILE__, __func__, __LINE__)
+#define assert_equal_integer(A, B, C, D)  A .check_equal_integer(B, C, D, __FILE__, __func__, __LINE__)
+#define assert_equal_char(A, B, C, D)     A .check_equal_char(B, C, D, __FILE__, __func__, __LINE__)
 
 #endif
