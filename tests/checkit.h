@@ -84,6 +84,18 @@ public:
         }
     }
 
+    void check_false(int value, const std::string& msg, const char *filename, const char* func, int linenumber)
+    {
+        num_assertions += 1;
+        if (value) {
+            num_failed += 1;
+            std::ostringstream ss;
+            ss << "value is not false: " << value;
+            auto details = ss.str();
+            log_failure(details, filename, func, linenumber, msg);
+        }
+    }
+
     // Floating point equality comparison
     template<typename FP>
     void check_equal_fp(FP value1, FP value2,
@@ -182,6 +194,7 @@ public:
 
 
 #define assert_true(A, B, C)              A .check_true(B, C, __FILE__, __func__, __LINE__)
+#define assert_false(A, B, C)             A .check_false(B, C, __FILE__, __func__, __LINE__)
 #define assert_equal_pointer(A, B, C, D)  A .check_equal_pointer(B, C, D, __FILE__, __func__, __LINE__)
 #define assert_equal_cstr(A, B, C, D)     A .check_equal_cstr(B, C, D, __FILE__, __func__, __LINE__)
 #define assert_equal_fp(A, B, C, D)       A .check_equal_fp(B, C, D, __FILE__, __func__, __LINE__)
