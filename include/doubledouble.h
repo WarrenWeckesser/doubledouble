@@ -66,7 +66,11 @@ public:
     constexpr
     DoubleDouble(double x, double y)
     {
-        // XXX What if x or y is NAN?
+        if (std::isnan(x) || std::isnan(y)) {
+            upper = NAN;
+            lower = NAN;
+            return;
+        }
         // XXX This canonicalization convention for INFs is experimental
         //     and subject to change.
         bool xinf = std::isinf(x);
@@ -104,7 +108,11 @@ public:
 
     constexpr
     DoubleDouble(double upper) : upper(upper)
-    {}
+    {
+        if (std::isnan(upper)) {
+            lower = NAN;
+        }
+    }
 
     DoubleDouble operator-() const;
     DoubleDouble operator+(double x) const;
@@ -653,6 +661,9 @@ inline DoubleDouble DoubleDouble::expm1() const
 
 inline DoubleDouble hypot(const DoubleDouble& x, const DoubleDouble &y)
 {
+    if (std::isinf(x.upper) || std::isinf(y.upper)) {
+        return DoubleDouble(INFINITY);
+    }
     auto absx = x.abs();
     auto absy = y.abs();
     auto m = (absx > absy) ? absx : absy;

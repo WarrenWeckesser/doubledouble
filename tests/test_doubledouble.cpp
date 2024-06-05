@@ -8,6 +8,12 @@
 
 using namespace doubledouble;
 
+
+#define assert_isnan(test, d) \
+    assert_true(test, std::isnan(d.upper), "upper is NAN"); \
+    assert_true(test, std::isnan(d.lower), "lower is NAN"); \
+
+
 //
 // Some of the equality tests of the lower parts of the results might be
 // too optimistic.  They might fail on different combinations of platforms,
@@ -40,6 +46,15 @@ void test_constructor(CheckIt& test)
     auto bad = DoubleDouble((double) INFINITY, (double) -INFINITY);
     assert_true(test, std::isnan(bad.upper), "DoubleDouble(INF, -INF) (upper)");
     assert_true(test, std::isnan(bad.lower), "DoubleDouble(INF, -INF) (lower)");
+
+    auto dd1 = DoubleDouble(NAN, 0.0);
+    assert_isnan(test, dd1);
+
+    auto dd2 = DoubleDouble(1.0, NAN);
+    assert_isnan(test, dd2);
+
+    auto dd3 = DoubleDouble(NAN);
+    assert_isnan(test, dd3);
 }
 
 void test_add(CheckIt& test)
@@ -47,6 +62,12 @@ void test_add(CheckIt& test)
     auto z = DoubleDouble(1.0, 1e-18) + DoubleDouble(1.5, 5e-19);
     assert_equal_fp(test, z.upper, 2.5, "(1, 1e-18) + (1.5, 5e-19) (upper)");
     assert_close_fp(test, z.lower, 1.5e-18, 5e-16, "(1, 1e-18) + (1.5, 5e-19) (lower)");
+
+    auto s1 = DoubleDouble(4.0, 4e-17) + NAN;
+    assert_isnan(test, s1);
+
+    auto s2 = DoubleDouble(4.0, 4e-17) + DoubleDouble(NAN);
+    assert_isnan(test, s2);
 }
 
 void test_inplace_add(CheckIt& test)
@@ -59,6 +80,13 @@ void test_inplace_add(CheckIt& test)
     z += DoubleDouble(3.0, 1e-18);
     assert_equal_fp(test, z.upper, 9.0, "Check z += (3.5, 1e-18) (upper)");
     assert_close_fp(test, z.lower, 2.5e-18, 5e-16, "Check z += (3.5, 1e-18) (lower)");
+
+    z += NAN;
+    assert_isnan(test, z);
+
+    z = DoubleDouble(100.0, 1.3e-15);
+    z += DoubleDouble(54.0, NAN);
+    assert_isnan(test, z);
 }
 
 void test_subtract(CheckIt& test)
@@ -78,6 +106,12 @@ void test_subtract(CheckIt& test)
     y = x - 10;
     assert_equal_fp(test, y.upper, 3e-18, "x - 10 (upper)");
     assert_equal_fp(test, y.lower, 0.0, "x - 10 (lower)");
+
+    y = x - NAN;
+    assert_isnan(test, y);
+
+    y = x - DoubleDouble(5.0, NAN);
+    assert_isnan(test, y);
 }
 
 void test_inplace_subtract(CheckIt& test)
@@ -104,6 +138,13 @@ void test_inplace_subtract(CheckIt& test)
     assert_equal_fp(test, y.upper, 0.0, "test_inplace_subtract (upper)");
     assert_equal_fp(test, y.lower, 0.0, "test_inplace_subtract (lower)");
     */
+
+    y -= NAN;
+    assert_isnan(test, y);
+
+    y = DoubleDouble(100.0, 1.3e-15);
+    y -= DoubleDouble(54.0, NAN);
+    assert_isnan(test, y);
 }
 
 void test_multiply(CheckIt& test)
@@ -114,6 +155,12 @@ void test_multiply(CheckIt& test)
     y = x*x;
     assert_equal_fp(test, y.upper, 100.0, "Check x*x (upper)");
     assert_equal_fp(test, y.lower, 6e-17, "Check x*x (lower)");
+
+    y = x*NAN;
+    assert_isnan(test, y);
+
+    y = x*DoubleDouble(NAN);
+    assert_isnan(test, y);
 }
 
 void test_inplace_multiply(CheckIt& test)
@@ -126,6 +173,13 @@ void test_inplace_multiply(CheckIt& test)
     z *= DoubleDouble(-2.0, 2e-18);
     assert_equal_fp(test, z.upper, 54.0, "Check z *= (-2.0, 2e-18) (upper)");
     assert_close_fp(test, z.lower, -27*2e-18 + -7.5e-18*-2.0, 5e-16, "Check z *= (-2.0, 2e-18) (lower)");
+
+    z *= NAN;
+    assert_isnan(test, z);
+
+    z = DoubleDouble(3.0);
+    z *= DoubleDouble(NAN);
+    assert_isnan(test, z);
 }
 
 void test_divide(CheckIt &test)
@@ -134,6 +188,12 @@ void test_divide(CheckIt &test)
     auto y = 1.0 / three;
     assert_equal_fp(test, y.upper, 0.3333333333333333, "1/3 (upper)");
     assert_equal_fp(test, y.lower, 1.850371707708594e-17, "1/3 (lower)");
+
+    y = three/NAN;
+    assert_isnan(test, y);
+
+    y = three/DoubleDouble(NAN);
+    assert_isnan(test, y);
 }
 
 void test_inplace_divide(CheckIt& test)
@@ -149,6 +209,13 @@ void test_inplace_divide(CheckIt& test)
     z /= DoubleDouble(5.0, 1e-20);
     assert_equal_fp(test, z.upper, 1.0, "Check z /= (5.0, 1e-20) (upper)");
     assert_close_fp(test, z.lower, -1.2e-21, 5e-16, "Check z /= (5.0, 1e-20) (lower)");
+
+    z /= NAN;
+    assert_isnan(test, z);
+
+    z = DoubleDouble(3.0);
+    z /= DoubleDouble(NAN);
+    assert_isnan(test, z);
 }
 
 void test_expressions(CheckIt& test)
@@ -210,6 +277,13 @@ void test_comparisons(CheckIt& test)
     assert_true(test, x >= 13.5, "x >= 13.5");
     assert_true(test, 100.0 >= z, "100.0 >= z");
     assert_true(test, -3.0 >= w, "-3.0 >= w");
+
+    assert_true(test, DoubleDouble(NAN) != DoubleDouble(NAN), "check NAN != NAN is true");
+    assert_false(test, DoubleDouble(NAN) == DoubleDouble(NAN), "NAN == NAN");
+    assert_false(test, DoubleDouble(NAN) < DoubleDouble(NAN), "NAN < NAN");
+    assert_false(test, DoubleDouble(NAN) > DoubleDouble(NAN), "NAN > NAN");
+    assert_false(test, DoubleDouble(NAN) <= DoubleDouble(NAN), "NAN <= NAN");
+    assert_false(test, DoubleDouble(NAN) >= DoubleDouble(NAN), "NAN >= NAN");
 }
 
 
@@ -221,6 +295,9 @@ void test_abs(CheckIt& test)
     a = x.abs();
     assert_equal_fp(test, a.upper, 7.0, "abs(3 - x) (upper)");
     assert_equal_fp(test, a.lower, 3e-18, "abs(3 - x) (lower)");
+
+    a = DoubleDouble(NAN).abs();
+    assert_isnan(test, a);
 }
 
 void test_powi(CheckIt& test)
@@ -229,6 +306,15 @@ void test_powi(CheckIt& test)
     auto y = x.powi(4);
     assert_equal_fp(test, y.upper, 10000.0, "Check x**4 (upper)");
     assert_close_fp(test, y.lower, 1.2e-14, 5e-16, "Check x**4 (lower)");
+
+    y = DoubleDouble(NAN).powi(0);
+    assert_true(test, y == 1.0, "NAN**0 is 1");
+    y = DoubleDouble(NAN).powi(1);
+    assert_isnan(test, y);
+    y = DoubleDouble(NAN).powi(2);
+    assert_isnan(test, y);
+    y = DoubleDouble(NAN).powi(3);
+    assert_isnan(test, y);
 }
 
 void test_sqrt(CheckIt& test)
@@ -247,6 +333,9 @@ void test_sqrt(CheckIt& test)
     y = DoubleDouble(0.0, 0.0).sqrt();
     assert_equal_fp(test, y.upper, 0.0, "sqrt((0, 0)) (upper)");
     assert_equal_fp(test, y.lower, 0.0, "sqrt((0, 0)) (lower)");
+
+    y = DoubleDouble(NAN).sqrt();
+    assert_isnan(test, y);
 }
 
 void test_log(CheckIt& test)
@@ -275,6 +364,9 @@ void test_log(CheckIt& test)
     y = DoubleDouble(1e-21, 3.5e-43).log();
     assert_equal_fp(test, y.upper, -48.35428695287496, "log((1e-21, 3.5e-43)) (upper)");
     assert_close_fp(test, y.lower, -1.7511230665702564e-15, 5e-16, "log((1e-21, 3.5e-43)) (lower)");
+
+    y = DoubleDouble(NAN).log();
+    assert_isnan(test, y);
 }
 
 struct log1p_case {
@@ -315,6 +407,9 @@ void test_log1p(CheckIt& test)
         assert_equal_fp(test, y.upper, sample.yhi, s1.str());
         assert_close_fp(test, y.lower, sample.ylo, sample.reltol, s2.str());
     }
+
+    auto y = DoubleDouble(NAN).log1p();
+    assert_isnan(test, y);
 }
 
 void test_exp(CheckIt& test)
@@ -356,6 +451,9 @@ void test_exp(CheckIt& test)
     y = DoubleDouble(710.0).exp();
     assert_true(test, std::isinf(y.upper), "isinf(exp(710).upper)");
     assert_equal_fp(test, y.lower, 0.0, "exp(710).lower == 0");
+
+    y = DoubleDouble(NAN).exp();
+    assert_isnan(test, y);
 }
 
 void test_expm1(CheckIt& test)
@@ -382,6 +480,9 @@ void test_expm1(CheckIt& test)
     y = DoubleDouble(-0.46875).expm1();
     assert_equal_fp(test, y.upper, -0.37421599039540887, "expm1(-0.46875) upper");
     assert_equal_fp(test, y.lower, -7.658883125910196e-18, "expm1(-0.46875) lower");
+
+    y = DoubleDouble(NAN).expm1();
+    assert_isnan(test, y);
 }
 
 void test_hypot(CheckIt& test)
@@ -429,6 +530,13 @@ void test_hypot(CheckIt& test)
     h = hypot(x, y);
     assert_equal_fp(test, h.upper, -x.upper, "hypot(x, (0, 0)) (upper)");
     assert_equal_fp(test, h.lower, -x.lower, "hypot(x, (0, 0)) (lower)");
+
+    x = DoubleDouble(INFINITY);
+    y = DoubleDouble(NAN);
+    h = hypot(x, y);
+    assert_equal_fp(test, h.upper, (double) INFINITY, "hypot(INF, NAN) is INF");
+    h = hypot(y, x);
+    assert_equal_fp(test, h.upper, (double) INFINITY, "hypot(INF, NAN) is INF");
 }
 
 void test_dsum(CheckIt& test)
