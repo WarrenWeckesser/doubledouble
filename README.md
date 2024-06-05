@@ -17,8 +17,9 @@ Here is a small program to compute the volume of a cone with base radius 2.0
 and height 7.5.
 
 ```
-#include <iostream>
-#include <iomanip>
+#include <cstdio>
+#include <charconv>
+#include <system_error>
 #include "doubledouble.h"
 
 using namespace std;
@@ -26,10 +27,21 @@ using namespace std;
 // For DoubleDouble and dd_pi.
 using namespace doubledouble;
 
+void print_double(const double x)
+{
+    char buf[24];
+    const to_chars_result res = to_chars(buf, buf + sizeof(buf), x);
+    if (res.ec == errc{}) {
+        printf("%.*s", static_cast<int>(res.ptr - buf), buf);
+    }
+    else {
+        printf("<to_chars() failed!>");
+    }
+}
+
 int main()
 {
-    // Compute the volume of a cone with more precision than
-    // is probably necessary.
+    // Compute the volume of a cone with DoubleDouble inputs.
 
     // Radius of the base of the cone.
     DoubleDouble r{2.0};
@@ -40,15 +52,18 @@ int main()
     // Volume is pi*r^2*h/3.
     auto volume = dd_pi * r.powi(2) * h / 3;
 
-    cout << setprecision(17) << "Volume of cone is " << volume.upper
-         << " + " << scientific << volume.lower << endl;
+    printf("Volume of cone is ");
+    print_double(volume.upper);
+    printf(" + ");
+    print_double(volume.lower);
+    printf("\n");
 }
 ```
 
 When run, the program prints
 
 ```
-Volume of cone is 31.415926535897931 + 1.22464679914735345e-15
+Volume of cone is 31.41592653589793 + 1.2246467991473535e-15
 ```
 
 For comparison, here is how that result could be computed in Python
