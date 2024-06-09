@@ -556,8 +556,6 @@ inline DoubleDouble DoubleDouble::log1p() const
         return (*this)*(1.0 + (*this)*(-0.5 + (*this)*(1.0/DoubleDouble(3.0) + (*this)*(-0.25 + (*this)*(1.0/DoubleDouble(5.0) - (*this)/6.0)))));
     }
     DoubleDouble xp1 = (*this) + 1.0;
-    // DoubleDouble eps = xp1 - 1.0 - *this;
-    // std::cout << "eps = (" << eps.upper << ", " << eps.lower << ")" << std::endl;
     return xp1.log();
 }
 
