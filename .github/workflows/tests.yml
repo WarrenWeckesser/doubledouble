@@ -3,7 +3,7 @@ name: Test
 on: [push, pull_request]
 
 jobs:
-  test:
+  test-ubuntu-latest:
 
     runs-on: ubuntu-latest
     
@@ -13,4 +13,16 @@ jobs:
       run: |
         cd tests
         make
+        ./test_doubledouble
+
+  test-macos-13:
+
+    runs-on: macos-13
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: Compile and run tests.
+      run: |
+        cd tests
+        make -f Makefile.macos
         ./test_doubledouble
