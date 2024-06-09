@@ -1,0 +1,11 @@
+# TODO: Fix this Makefile duplication.  This file just adds the
+# compiler option -mmacosx-version-min=13.3
+
+CXX = g++
+CXXFLAGS = -std=c++17 -mmacosx-version-min=13.3 -I../include -Wall -Werror -I../include
+
+test_doubledouble: test_doubledouble.cpp checkit.h
+	$(CXX) $(CXXFLAGS) test_doubledouble.cpp -o test_doubledouble
+
+clean:
+	rm -rf test_doubledouble
