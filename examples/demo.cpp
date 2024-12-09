@@ -107,5 +107,7 @@ int main(int argc, char *argv[])
     z = DoubleDouble(2.5e-16).expm1();
     print_doubledouble_ee(" expm1(2.5e-16)", z);
 
+    z = hypot(x, y);
+    print_doubledouble(" hypot(x, y)", z);
     return 0;
 }
