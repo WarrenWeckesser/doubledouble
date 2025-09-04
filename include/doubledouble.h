@@ -622,7 +622,7 @@ inline DoubleDouble expm1_rational_approx(const DoubleDouble& x)
                                                *x + denom[2])
                                                *x + denom[1])
                                                *x + denom[0]);
-    return x*Y + x * num/den;;
+    return x*Y + x * num/den;
 }
 
 
