@@ -1,6 +1,3 @@
-# TODO: Fix this Makefile duplication.  This file just adds the
-# compiler option -mmacosx-version-min=13.3
-
 CXXFLAGS = -pedantic -Wall -Werror -std=c++17 -I../include
 
 ifeq ($(OS),Windows_NT)
