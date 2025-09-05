@@ -10,6 +10,10 @@ The `DoubleDouble` class defines:
 
 C++17 is required to use the `DoubleDouble` class.
 
+The library must not be compiled with gcc's `-ffast-math` option or any
+other compiler option that will allow the compiler to reorder or simplify
+arithmetic expressions.
+
 Example
 -------
 
