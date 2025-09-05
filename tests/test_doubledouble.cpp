@@ -509,6 +509,12 @@ void test_hypot(CheckIt& test)
     assert_equal_fp(test, h.upper, 0.0, "hypot((0, 0), (0, 0)) (upper)");
     assert_equal_fp(test, h.lower, 0.0, "hypot((0, 0), (0, 0)) (lower)");
 
+    x = DoubleDouble(1.0) / 3.0;
+    y = DoubleDouble(7.0) / 5.0;
+    h = hypot(x, y);
+    assert_equal_fp(test, h.upper, 1.4391355429948602, "hypot(1/3, 7/5) (upper)");
+    assert_equal_fp(test, h.lower, -3.962996388323609e-17, "hypot(1/3, 7/5)) (lower)");
+
     //
     // Reference values for the overflow and underflow tests of hypot
     // were computed with mpmath in Python:
