@@ -187,6 +187,10 @@ public:
 // Assorted predefined constants.
 //
 
+// 0
+inline const DoubleDouble dd_zero{0.0, 0.0};
+// 1
+inline const DoubleDouble dd_one{1.0, 0.0};
 // sqrt(2)
 inline const DoubleDouble dd_sqrt2{1.4142135623730951, -9.667293313452913e-17};
 // sqrt(1/2)
@@ -209,6 +213,8 @@ inline const DoubleDouble dd_2_sqrtpi{1.1283791670955126, 1.533545961316588e-17}
 inline const DoubleDouble dd_sqrt_pi_2{1.2533141373155003, -9.164289990229583e-17};
 // sqrt(2/pi)
 inline const DoubleDouble dd_sqrt_2_pi{0.7978845608028654, -4.98465440455546e-17};
+// inf
+inline const DoubleDouble dd_inf{INFINITY, 0.0};
 
 
 inline DoubleDouble two_sum_quick(double x, double y)
@@ -512,7 +518,7 @@ inline DoubleDouble DoubleDouble::powi(int n) const
         b = b*b;
     }
     if (n < 0) {
-        return DoubleDouble(1) / r;
+        return dd_one / r;
     }
     return r;
 }
@@ -521,7 +527,7 @@ inline DoubleDouble DoubleDouble::powi(int n) const
 inline DoubleDouble DoubleDouble::exp() const
 {
     if (upper > 709.782712893384) {
-        return DoubleDouble(INFINITY);
+        return dd_inf;
     }
     int n = int(round(upper));
     DoubleDouble x(upper - n, lower);
@@ -545,7 +551,7 @@ inline DoubleDouble DoubleDouble::exp() const
 inline DoubleDouble DoubleDouble::sqrt() const
 {
     if (upper == 0 && lower == 0) {
-        return DoubleDouble(0.0);
+        return dd_zero;
     }
     double r = std::sqrt(upper);
     DoubleDouble sf = two_product(r, r);
@@ -668,7 +674,7 @@ inline DoubleDouble DoubleDouble::expm1() const
         if (a.upper > LOG_MAX_VALUE) {
             if (this->upper > 0) {
                 // XXX Set overflow, and then return...
-                return DoubleDouble(INFINITY);
+                return dd_inf;
             }
             return DoubleDouble(-1.0);
         }
@@ -688,13 +694,13 @@ inline DoubleDouble DoubleDouble::expm1() const
 inline DoubleDouble hypot(const DoubleDouble& x, const DoubleDouble &y)
 {
     if (std::isinf(x.upper) || std::isinf(y.upper)) {
-        return DoubleDouble(INFINITY);
+        return dd_inf;
     }
     auto absx = x.abs();
     auto absy = y.abs();
     auto m = (absx > absy) ? absx : absy;
     if (m.upper == 0.0 && m.lower == 0.0) {
-        return DoubleDouble(0.0);
+        return dd_zero;
     }
     auto u = x/m;
     auto v = y/m;
