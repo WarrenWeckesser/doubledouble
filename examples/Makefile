@@ -1,18 +1,24 @@
-CXXFLAGS = -Wall -Werror -std=c++17 -I../include
+# TODO: Fix this Makefile duplication.  This file just adds the
+# compiler option -mmacosx-version-min=13.3
 
-all: demo readme_example one_third find_eps
+CXXFLAGS = -pedantic -Wall -Werror -std=c++17 -I../include
 
-demo: demo.cpp
-	g++ $(CXXFLAGS) demo.cpp -o demo
+ifeq ($(OS),Windows_NT)
+    DETECTED_OS := Windows
+else
+    DETECTED_OS := $(shell uname -s)
+endif
 
-readme_example: readme_example.cpp
-	g++ $(CXXFLAGS) readme_example.cpp -o readme_example
+ifeq ($(DETECTED_OS),Darwin)
+	CXXFLAGS += -mmacosx-version-min=13.3
+endif
 
-one_third: one_third.cpp
-	g++ $(CXXFLAGS) one_third.cpp -o one_third
+EXECUTABLES = demo readme_example one_third find_eps
 
-find_eps: find_eps.cpp
-	g++ $(CXXFLAGS) find_eps.cpp -o find_eps
+all: $(EXECUTABLES)
+
+$(EXECUTABLES): %: %.cpp
+	$(CXX) $(CXXFLAGS) $< -o  $@
 
 clean:
-	rm -rf demo readme_example one_third find_eps
+	rm -f $(EXECUTABLES)
