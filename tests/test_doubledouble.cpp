@@ -435,8 +435,8 @@ void test_exp(CheckIt& test)
     assert_equal_fp(test, y.lower, -1.3488747091995788e-15, "exp(pi) (lower)");
 
     y = (x - 10.0).exp();
-    assert_equal_fp(test, y.upper, 1.0, "exp(x - 10) - 1 (upper)");
-    assert_equal_fp(test, y.lower, 3e-18, "exp(x - 10) - 1 (lower)");
+    assert_equal_fp(test, y.upper, 1.0, "exp(x - 10) (upper)");
+    assert_equal_fp(test, y.lower, 3e-18, "exp(x - 10) (lower)");
 
     y = t.exp();
     assert_equal_fp(test, y.upper, 1.0000000000000038, "exp(t) (upper)");
