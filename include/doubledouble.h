@@ -317,7 +317,7 @@ inline DoubleDouble DoubleDouble::operator/(double x) const
 
 inline DoubleDouble operator/(double x, const DoubleDouble& y)
 {
-    return DoubleDouble(x, 0.0) / y;
+    return DoubleDouble(x) / y;
 }
 
 inline DoubleDouble DoubleDouble::operator/(const DoubleDouble& x) const
@@ -521,7 +521,7 @@ inline DoubleDouble DoubleDouble::powi(int n) const
 inline DoubleDouble DoubleDouble::exp() const
 {
     if (upper > 709.782712893384) {
-        return DoubleDouble(INFINITY, 0.0);
+        return DoubleDouble(INFINITY);
     }
     int n = int(round(upper));
     DoubleDouble x(upper - n, lower);
@@ -545,7 +545,7 @@ inline DoubleDouble DoubleDouble::exp() const
 inline DoubleDouble DoubleDouble::sqrt() const
 {
     if (upper == 0 && lower == 0) {
-        return DoubleDouble(0.0, 0.0);
+        return DoubleDouble(0.0);
     }
     double r = std::sqrt(upper);
     DoubleDouble sf = two_product(r, r);
@@ -611,7 +611,7 @@ static const std::array<DoubleDouble, 10> numer{
 };
 
 static const std::array<DoubleDouble, 11> denom{
-    DoubleDouble(1.0, 0.0),
+    DoubleDouble(1.0),
     DoubleDouble(-0.4544126470907431, -2.2553855773661143e-17),
     DoubleDouble(0.09682713193619222, -4.961446925746919e-19),
     DoubleDouble(-0.012745248725908178, -6.0676821249478945e-19),
@@ -630,7 +630,7 @@ static const std::array<DoubleDouble, 11> denom{
 //
 inline DoubleDouble expm1_rational_approx(const DoubleDouble& x)
 {
-    const DoubleDouble Y = DoubleDouble(1.028127670288086, 0.0);
+    const DoubleDouble Y = DoubleDouble(1.028127670288086);
     const DoubleDouble num = (((((((((numer[9]*x + numer[8])
                                               *x + numer[7])
                                               *x + numer[6])
@@ -668,9 +668,9 @@ inline DoubleDouble DoubleDouble::expm1() const
         if (a.upper > LOG_MAX_VALUE) {
             if (this->upper > 0) {
                 // XXX Set overflow, and then return...
-                return DoubleDouble(INFINITY, 0.0);
+                return DoubleDouble(INFINITY);
             }
-            return DoubleDouble(-1.0, 0.0);
+            return DoubleDouble(-1.0);
         }
         return (*this).exp() - 1.0;
     }
@@ -694,7 +694,7 @@ inline DoubleDouble hypot(const DoubleDouble& x, const DoubleDouble &y)
     auto absy = y.abs();
     auto m = (absx > absy) ? absx : absy;
     if (m.upper == 0.0 && m.lower == 0.0) {
-        return DoubleDouble(0.0, 0.0);
+        return DoubleDouble(0.0);
     }
     auto u = x/m;
     auto v = y/m;
