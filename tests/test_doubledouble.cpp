@@ -293,8 +293,8 @@ void test_abs(CheckIt& test)
     auto x = DoubleDouble(-7.0, -3e-18);
 
     a = x.abs();
-    assert_equal_fp(test, a.upper, 7.0, "abs(3 - x) (upper)");
-    assert_equal_fp(test, a.lower, 3e-18, "abs(3 - x) (lower)");
+    assert_equal_fp(test, a.upper, 7.0, "abs(x) (upper)");
+    assert_equal_fp(test, a.lower, 3e-18, "abs(x) (lower)");
 
     a = DoubleDouble(NAN).abs();
     assert_isnan(test, a);
