@@ -24,11 +24,14 @@ int main()
 {
     const DoubleDouble one{1.0};
     DoubleDouble eps{1.0};
-    DoubleDouble halfeps;
+    DoubleDouble halfeps, normaleps;
 
     halfeps = eps/2.0;
     while (one + halfeps != one) {
         eps = halfeps;
+        if (std::isnormal(eps.upper)) {
+            normaleps = eps;
+        }
         halfeps /= 2.0;
     }
 
@@ -43,5 +46,11 @@ int main()
     print_double(epsp1.upper);
     printf(" + ");
     print_double(epsp1.lower);
+    printf("\n");
+
+    printf("normaleps = ");
+    print_double(normaleps.upper);
+    printf(" + ");
+    print_double(normaleps.lower);
     printf("\n");
 }
